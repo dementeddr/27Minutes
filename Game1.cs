@@ -20,6 +20,9 @@ namespace _27Minutes
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Texture2D hero;
+        Vector2 heroPos;
+        Vector2 heroSpeed;
 
         public Game1()
         {
@@ -36,6 +39,9 @@ namespace _27Minutes
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            Random rand = new Random(); //TODO Add seeds
+            heroPos = Vector2.Zero;
+			heroSpeed = new Vector2(50.0f, 50.0f);
 
             base.Initialize();
         }
@@ -48,6 +54,7 @@ namespace _27Minutes
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            hero = Content.Load<Texture2D>("marioSprite1");
 
             // TODO: use this.Content to load your game content here
         }
@@ -72,7 +79,39 @@ namespace _27Minutes
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
+            // Move the sprite by speed, scaled by elapsed time.
+            heroPos.X += heroSpeed.X * (float)gameTime.ElapsedGameTime.TotalSeconds;
+			heroPos.Y += heroSpeed.Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            int MaxX = graphics.GraphicsDevice.Viewport.Width - hero.Width;
+            int MinX = 0;
+            int MaxY = graphics.GraphicsDevice.Viewport.Height - hero.Height;
+            int MinY = 0;
+
+            // Check for bounce.
+            if (heroPos.X > MaxX)
+            {
+                heroSpeed.X *= -1;
+                heroPos.X = MaxX;
+            }
+
+            else if (heroPos.X < MinX)
+            {
+                heroSpeed.X *= -1;
+                heroPos.X = MinX;
+            }
+
+            if (heroPos.Y > MaxY)
+            {
+                heroSpeed.Y *= -1;
+                heroPos.Y = MaxY;
+            }
+
+            else if (heroPos.Y < MinY)
+            {
+                heroSpeed.Y *= -1;
+                heroPos.Y = MinY;
+            }
 
             base.Update(gameTime);
         }
@@ -83,11 +122,16 @@ namespace _27Minutes
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.DarkOliveGreen);
 
+            spriteBatch.Begin(SpriteBlendMode.AlphaBlend);
+			spriteBatch.Draw(hero, heroPos, null, Color.White, 0f, Vector2.Zero, 3.0f, SpriteEffects.None, 0f);
+            spriteBatch.End();
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }
+
+        //protected 
     }
 }
