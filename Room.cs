@@ -5,7 +5,7 @@ namespace _27Minutes {
 	public class Room {
 		private Door[] doors;
 		private Rectangle rect;
-		public Tile[,] grid;
+		//public Tile[,] grid;
 
 		public static Vector2[] dimensions = {new Vector2(1,1),
 							   new Vector2(2,1),
@@ -41,7 +41,7 @@ namespace _27Minutes {
 
 		private void init() {
 			doors = new Door[4];
-			generateRoom();
+			//generateRoom();
 		}
 
 		public Vector2 getSize() {
@@ -56,9 +56,9 @@ namespace _27Minutes {
 			return rect;
 		}
 
-		public Tile[,] getTileGrid() {
-			return grid;
-		}
+		//public Tile[,] getTileGrid() {
+		//	return grid;
+		//}
 
 		public void setRectangle(Rectangle rectangle) {
 			rect = rectangle;
@@ -82,7 +82,7 @@ namespace _27Minutes {
 			return dimensions[rand.Next(dimensions.Length)];
 		}
 
-		private void generateRoom() {
+		/*private void generateRoom() {
 			//grid = new Tile[rect.Width * 10, rect.Height * 10];
 			
 			grid = new Tile[12,16];
@@ -96,7 +96,7 @@ namespace _27Minutes {
 			for (int i = 0; i < grid.GetLength(1); i++) {
 				grid[4, i].type = tileType.SOLID;
 			}
-			 
+			 */
 			//int numDoor = 2;
 			//int random = rand.Next(grid.GetLength(1) - 5);
 
@@ -108,7 +108,7 @@ namespace _27Minutes {
 				numDoor = 3;
 			 */
 
-		}
+		//}
 
 	}
 }

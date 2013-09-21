@@ -13,26 +13,34 @@ using Microsoft.Xna.Framework.Storage;
 
 namespace _27Minutes
 {
-
 	public enum tileType { SOLID, AIR, LADDER, HAZARD, DOOR }
+
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class Manager : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
 		Texture2D wall;
 		Texture2D floor;
         Texture2D hero;
 		Texture2D quad;
-        Vector2 heroPos;
+        
+		Vector2 heroPos;
         Vector2 heroSpeed;
+		
 		Random rand;
 		LinkedList<Room> rooms;
 		Room exit;
 
-        public Game1()
+		int scalar = 32;
+		TileMap myMap;
+		int squaresAcross;
+		int squaresDown;
+
+        public Manager()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -48,10 +56,12 @@ namespace _27Minutes
         {
             // TODO: Add your initialization logic here
             rand = new Random(); //TODO Add seeds
+			myMap = new TileMap(rand);
             heroPos = Vector2.Zero;
 			heroSpeed = new Vector2(0, 0);
-
-			generateMap(rand);
+			squaresDown = 2 + (int)Math.Ceiling((double)(graphics.GraphicsDevice.Viewport.Height / scalar));
+			squaresAcross = 1 + (int)Math.Ceiling((double)(graphics.GraphicsDevice.Viewport.Width / scalar));
+			//generateMap(rand);
 
             base.Initialize();
         }
@@ -67,8 +77,12 @@ namespace _27Minutes
             hero = Content.Load<Texture2D>("marioSprite1");
 			wall = Content.Load<Texture2D>("grey_dirt3");
 			floor = Content.Load<Texture2D>("floor_vines3");
+
 			quad = new Texture2D(GraphicsDevice, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
 			quad.SetData<Color>(new Color[] { Color.White });
+
+			Tile.texture = Content.Load<Texture2D>("grey_dirt3");
+			//Tile.TileSetTexture = Content.Load<Texture2D>(@"Textures\TileSets\part1_tileset");
             // TODO: use this.Content to load your game content here
         }
 
@@ -92,13 +106,25 @@ namespace _27Minutes
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            
-            int MaxX = graphics.GraphicsDevice.Viewport.Width - hero.Width;
-            int MinX = 0;
-            int MaxY = graphics.GraphicsDevice.Viewport.Height - hero.Height;
-            int MinY = 0;
 
-            // Check for bounce.
+			KeyboardState ks = Keyboard.GetState();
+			if (ks.IsKeyDown(Keys.Left)) {
+				Camera.Location.X = MathHelper.Clamp(Camera.Location.X - 2, 0, (myMap.MapWidth - squaresAcross) * scalar);
+			}
+
+			if (ks.IsKeyDown(Keys.Right)) {
+				Camera.Location.X = MathHelper.Clamp(Camera.Location.X + 2, 0, (myMap.MapWidth - squaresAcross) * scalar);
+			}
+
+			if (ks.IsKeyDown(Keys.Up)) {
+				Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y - 2, 0, (myMap.MapHeight - squaresDown) * scalar);
+			}
+
+			if (ks.IsKeyDown(Keys.Down)) {
+				Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y + 2, 0, (myMap.MapHeight - squaresDown) * scalar);
+			}
+
+            /*
 			KeyboardState keyState = Keyboard.GetState();
 			if (keyState.IsKeyDown(Keys.Right))
 				heroSpeed.X = 50;
@@ -116,7 +142,7 @@ namespace _27Minutes
 			// Move the sprite by speed, scaled by elapsed time.
 			heroPos.X += heroSpeed.X * (float)gameTime.ElapsedGameTime.TotalSeconds;
 			heroPos.Y += heroSpeed.Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
+			*/
             base.Update(gameTime);
         }
 
@@ -125,12 +151,34 @@ namespace _27Minutes
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime) {
-			Rectangle rect;
+			
+			//Rectangle rect;
             GraphicsDevice.Clear(Color.DarkOliveGreen);
 
             spriteBatch.Begin(SpriteBlendMode.AlphaBlend);
+		
 			//spriteBatch.Draw(hero, heroPos, null, Color.White, 0f, Vector2.Zero, 3.0f, SpriteEffects.None, 1f);
-			drawRoom(exit);
+			//drawRoom(exit);
+
+			//spriteBatch.Begin();
+
+			Vector2 firstSquare = new Vector2(Camera.Location.X / scalar, Camera.Location.Y / scalar);
+			int firstX = (int) firstSquare.X;
+			int firstY = (int) firstSquare.Y;
+
+			Vector2 squareOffset = new Vector2(Camera.Location.X % scalar, Camera.Location.Y % scalar);
+			int offsetX = (int) squareOffset.X;
+			int offsetY = (int) squareOffset.Y;
+
+			for (int y = 0; y < squaresDown; y++) {
+				for (int x = 0; x < squaresAcross; x++) {
+					spriteBatch.Draw(
+						Tile.texture,
+						new Rectangle((x * scalar) - offsetX, (y * scalar) - offsetY, scalar, scalar),
+						Tile.GetSourceRectangle(myMap.Rows[y + firstY].Columns[x + firstX].TileID, scalar),
+						Color.White);
+				}
+			}
 			
             spriteBatch.End();
             // TODO: Add your drawing code here
@@ -142,20 +190,20 @@ namespace _27Minutes
 			Rectangle rect = new Rectangle();
 			rect.X = (int) room.getPosition().X;
 			rect.Y = (int)room.getPosition().Y;
-			rect.Width = (int)room.getSize().X * 32;
-			rect.Height = (int)room.getSize().Y * 32;
+			rect.Width = (int)room.getSize().X * scalar;
+			rect.Height = (int)room.getSize().Y * scalar;
 			return rect;
 		}
-
+		/*
 		private void drawRoom(Room room) {
 			Tile[,] grid = room.getTileGrid();
 			Rectangle temp = new Rectangle();
 			for (int i = 0; i < grid.GetLength(0); i++) {
 				for (int j = 0; j < grid.GetLength(1); j++) {
-					temp.Height = 32;
-					temp.Width = 32;
-					temp.X = j*32;
-					temp.Y = i*32;
+					temp.Height = scalar;
+					temp.Width = scalar;
+					temp.X = j*scalar;
+					temp.Y = i*scalar;
 					if (grid[i, j].type == tileType.AIR)
 						spriteBatch.Draw(wall, temp, Color.White);
 					else
@@ -163,6 +211,7 @@ namespace _27Minutes
 				}
 			}
 		}
+		*/
 
 		protected void generateMap(Random rand) {
 			int mapAreaLimit = 200;

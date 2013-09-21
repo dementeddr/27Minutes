@@ -84,6 +84,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Camera.cs" />
+    <Compile Include="TileMap.cs" />
+    <Compile Include="MapRow.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="MapCell.cs" />
     <Compile Include="Door.cs" />
