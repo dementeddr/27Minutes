@@ -84,6 +84,7 @@ namespace _27Minutes {
 
 		private void generateRoom() {
 			//grid = new Tile[rect.Width * 10, rect.Height * 10];
+			
 			grid = new Tile[12,16];
 
 			for (int i = 0; i < grid.GetLength(0); i++) {
@@ -95,6 +96,7 @@ namespace _27Minutes {
 			for (int i = 0; i < grid.GetLength(1); i++) {
 				grid[4, i].type = tileType.SOLID;
 			}
+			 
 			//int numDoor = 2;
 			//int random = rand.Next(grid.GetLength(1) - 5);
 
