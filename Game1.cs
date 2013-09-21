@@ -21,8 +21,11 @@ namespace _27Minutes
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D hero;
+		Texture2D block;
         Vector2 heroPos;
         Vector2 heroSpeed;
+		Random rand;
+		LinkedList<Room> rooms;
 
         public Game1()
         {
@@ -39,9 +42,11 @@ namespace _27Minutes
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            Random rand = new Random(); //TODO Add seeds
+            rand = new Random(); //TODO Add seeds
             heroPos = Vector2.Zero;
 			heroSpeed = new Vector2(0, 0);
+
+			generateMap(rand);
 
             base.Initialize();
         }
@@ -55,6 +60,7 @@ namespace _27Minutes
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             hero = Content.Load<Texture2D>("marioSprite1");
+			block = Content.Load<Texture2D>("Star Wars Legacy");
 
             // TODO: use this.Content to load your game content here
         }
@@ -116,13 +122,33 @@ namespace _27Minutes
             GraphicsDevice.Clear(Color.DarkOliveGreen);
 
             spriteBatch.Begin(SpriteBlendMode.AlphaBlend);
-			spriteBatch.Draw(hero, heroPos, null, Color.White, 0f, Vector2.Zero, 3.0f, SpriteEffects.None, 0f);
+			spriteBatch.Draw(hero, heroPos, null, Color.White, 0f, Vector2.Zero, 3.0f, SpriteEffects.None, 1f);
+			spriteBatch.Draw(block, rooms.First.Value.getRectangle, rooms.First.Value.getRectangle, Color.White, 0f, rooms.First.Value.getPosition, 0, SpriteEffects.None, 0f);
             spriteBatch.End();
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }
 
-        //protected 
-    }
+		protected void generateMap(Random rand) {
+			int mapAreaLimit = 200;
+			int totalArea = 0;
+			Room temp;
+			Rectangle rect;
+			Vector2 size;
+
+			rooms = new LinkedList<Room>();
+
+			for (int i = 0; i < 5; i++) {
+				rect = new Rectangle();
+				rect.X = rand.Next(GraphicsDevice.Viewport.Width);
+				rect.Y = rand.Next(GraphicsDevice.Viewport.Height);
+				size = Room.getRandSize(rand);
+				rect.Width = (int) size.X;
+				rect.Height = (int) size.Y;
+				temp = new Room(rect);
+				rooms.AddLast(temp);
+			}
+		}
+	}
 }
