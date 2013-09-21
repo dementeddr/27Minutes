@@ -41,7 +41,7 @@ namespace _27Minutes
             // TODO: Add your initialization logic here
             Random rand = new Random(); //TODO Add seeds
             heroPos = Vector2.Zero;
-			heroSpeed = new Vector2(50.0f, 50.0f);
+			heroSpeed = new Vector2(0, 0);
 
             base.Initialize();
         }
@@ -79,39 +79,30 @@ namespace _27Minutes
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // Move the sprite by speed, scaled by elapsed time.
-            heroPos.X += heroSpeed.X * (float)gameTime.ElapsedGameTime.TotalSeconds;
-			heroPos.Y += heroSpeed.Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
+            
             int MaxX = graphics.GraphicsDevice.Viewport.Width - hero.Width;
             int MinX = 0;
             int MaxY = graphics.GraphicsDevice.Viewport.Height - hero.Height;
             int MinY = 0;
 
             // Check for bounce.
-            if (heroPos.X > MaxX)
-            {
-                heroSpeed.X *= -1;
-                heroPos.X = MaxX;
-            }
+			KeyboardState keyState = Keyboard.GetState();
+			if (keyState.IsKeyDown(Keys.Right))
+				heroSpeed.X = 50;
+			if (keyState.IsKeyDown(Keys.Left))
+				heroSpeed.X = -50;
+			if (keyState.IsKeyDown(Keys.Up))
+				heroSpeed.Y = -50;
+			if (keyState.IsKeyDown(Keys.Down))
+				heroSpeed.Y = 50;
+			if (!keyState.IsKeyDown(Keys.Right) && !keyState.IsKeyDown(Keys.Left))
+				heroSpeed.X = 0;
+			if (!keyState.IsKeyDown(Keys.Up) && !keyState.IsKeyDown(Keys.Down))
+				heroSpeed.Y = 0;
 
-            else if (heroPos.X < MinX)
-            {
-                heroSpeed.X *= -1;
-                heroPos.X = MinX;
-            }
-
-            if (heroPos.Y > MaxY)
-            {
-                heroSpeed.Y *= -1;
-                heroPos.Y = MaxY;
-            }
-
-            else if (heroPos.Y < MinY)
-            {
-                heroSpeed.Y *= -1;
-                heroPos.Y = MinY;
-            }
+			// Move the sprite by speed, scaled by elapsed time.
+			heroPos.X += heroSpeed.X * (float)gameTime.ElapsedGameTime.TotalSeconds;
+			heroPos.Y += heroSpeed.Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             base.Update(gameTime);
         }
