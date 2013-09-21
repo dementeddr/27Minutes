@@ -13,6 +13,8 @@ using Microsoft.Xna.Framework.Storage;
 
 namespace _27Minutes
 {
+
+	public enum tileType { SOLID, AIR, LADDER, HAZARD, DOOR }
     /// <summary>
     /// This is the main type for your game
     /// </summary>
@@ -20,12 +22,15 @@ namespace _27Minutes
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+		Texture2D wall;
+		Texture2D floor;
         Texture2D hero;
-		Texture2D block;
+		Texture2D quad;
         Vector2 heroPos;
         Vector2 heroSpeed;
 		Random rand;
 		LinkedList<Room> rooms;
+		Room exit;
 
         public Game1()
         {
@@ -60,8 +65,10 @@ namespace _27Minutes
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             hero = Content.Load<Texture2D>("marioSprite1");
-			block = Content.Load<Texture2D>("Star Wars Legacy");
-
+			wall = Content.Load<Texture2D>("grey_dirt3");
+			floor = Content.Load<Texture2D>("floor_vines3");
+			quad = new Texture2D(GraphicsDevice, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
+			quad.SetData<Color>(new Color[] { Color.White });
             // TODO: use this.Content to load your game content here
         }
 
@@ -117,18 +124,45 @@ namespace _27Minutes
         /// This is called when the game should draw itself.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw(GameTime gameTime)
-        {
+        protected override void Draw(GameTime gameTime) {
+			Rectangle rect;
             GraphicsDevice.Clear(Color.DarkOliveGreen);
 
             spriteBatch.Begin(SpriteBlendMode.AlphaBlend);
-			spriteBatch.Draw(hero, heroPos, null, Color.White, 0f, Vector2.Zero, 3.0f, SpriteEffects.None, 1f);
-			spriteBatch.Draw(block, rooms.First.Value.getRectangle, rooms.First.Value.getRectangle, Color.White, 0f, rooms.First.Value.getPosition, 0, SpriteEffects.None, 0f);
+			//spriteBatch.Draw(hero, heroPos, null, Color.White, 0f, Vector2.Zero, 3.0f, SpriteEffects.None, 1f);
+			drawRoom(exit);
+			
             spriteBatch.End();
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }
+
+		private Rectangle sizeForDraw(Room room) {
+			Rectangle rect = new Rectangle();
+			rect.X = (int) room.getPosition().X;
+			rect.Y = (int)room.getPosition().Y;
+			rect.Width = (int)room.getSize().X * 32;
+			rect.Height = (int)room.getSize().Y * 32;
+			return rect;
+		}
+
+		private void drawRoom(Room room) {
+			Tile[,] grid = room.getTileGrid();
+			Rectangle temp = new Rectangle();
+			for (int i = 0; i < grid.GetLength(0); i++) {
+				for (int j = 0; j < grid.GetLength(1); j++) {
+					temp.Height = 32;
+					temp.Width = 32;
+					temp.X = j*32;
+					temp.Y = i*32;
+					if (grid[i, j].type == tileType.AIR)
+						spriteBatch.Draw(wall, temp, Color.White);
+					else
+						spriteBatch.Draw(floor, temp, Color.White);
+				}
+			}
+		}
 
 		protected void generateMap(Random rand) {
 			int mapAreaLimit = 200;
@@ -137,9 +171,9 @@ namespace _27Minutes
 			Rectangle rect;
 			Vector2 size;
 
-			rooms = new LinkedList<Room>();
+			//rooms = new LinkedList<Room>();
 
-			for (int i = 0; i < 5; i++) {
+			/*for (int i = 0; i < 5; i++) {
 				rect = new Rectangle();
 				rect.X = rand.Next(GraphicsDevice.Viewport.Width);
 				rect.Y = rand.Next(GraphicsDevice.Viewport.Height);
@@ -149,6 +183,10 @@ namespace _27Minutes
 				temp = new Room(rect);
 				rooms.AddLast(temp);
 			}
+			*/
+			//exit = rooms.First.Value;
+			//exit.setPosition(50, 50);
+			exit = new Room(0, 0, 2, 1);
 		}
 	}
 }
