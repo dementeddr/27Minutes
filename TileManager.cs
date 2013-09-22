@@ -24,6 +24,7 @@ namespace _27Minutes {
 			tiles.Add(Content.Load<Texture2D>("grey_dirt5"));
 			tiles.Add(Content.Load<Texture2D>("brick_dark1"));
 			tiles.Add(Content.Load<Texture2D>("zot_blue3"));
+			tiles.Add(Content.Load<Texture2D>("grey_dirt1"));
 		}
 
 		public static Texture2D getTexture(int TileID) {
