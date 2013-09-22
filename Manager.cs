@@ -133,10 +133,10 @@ namespace _27Minutes
 			if (ks.IsKeyDown(Keys.Right))
 				heroSpeed.X += cameraSpeed;
 
-			if (ks.IsKeyDown(Keys.Up) && heroPos.Y + 64 >= winHeight  /*&& onGround*/)
+			if (ks.IsKeyDown(Keys.Up) &&  onGround)
 				heroSpeed.Y -= 8;
 			
-			//collisionDetect();
+			collisionDetect();
 
 			//if (ks.IsKeyDown(Keys.Left)) {
 			if (heroSpeed.X < 0) {
@@ -180,7 +180,7 @@ namespace _27Minutes
 			}
 			
 			decel++;
-			if (decel % 6 == 0 && !onGround) {
+			if (decel % 4 == 0 && !onGround) {
 				heroSpeed.Y += 1;
 			}
 
@@ -197,7 +197,7 @@ namespace _27Minutes
 			int y = (int) (heroPos.Y + heroSpeed.Y + Camera.Location.Y) / scalar;
 
 			//Console.Write(myMap.Rows[y].Columns[x].getTileType());
-
+			/*
 			for (int i=0; i<3; i++) {
 				if ((int)myMap.Rows[y + i].Columns[x].getTileType() == (int)tileType.SOLID) {
 					rects.Add(new Rectangle(x * scalar, (y + i) * scalar, scalar, scalar));
@@ -207,14 +207,22 @@ namespace _27Minutes
 			for (int i = 0; i < 3; i++) {
 				if ((int)myMap.Rows[y + i].Columns[x+1].getTileType() == (int)tileType.SOLID)
 					rects.Add(new Rectangle((x+1) * scalar, (y + i) * scalar, scalar, scalar));
+			}*/
+
+			if ((int)myMap.Rows[y + 2].Columns[x].getTileType() == (int)tileType.SOLID) {
+				rects.Add(new Rectangle(x * scalar, (y + 2) * scalar, scalar, scalar));
+			}
+
+			if ((int)myMap.Rows[y + 2].Columns[x+1].getTileType() == (int)tileType.SOLID) {
+					rects.Add(new Rectangle((x+1) * scalar, (y + 2) * scalar, scalar, scalar));
 			}
 
 			onGround = false;
 
 			if (rects.Count > 0) {
-				//foreach (Rectangle r in rects) {
-				Rectangle r = rects[0];
-
+				foreach (Rectangle r in rects) {
+				//Rectangle r = rects[0];
+				/*
 					if (heroSpeed.X < 0 && heroPos.X <= r.X + 32 && heroPos.X > r.X) {
 						heroPos.X = r.X + 32;
 						heroSpeed.X = 0;
@@ -229,13 +237,13 @@ namespace _27Minutes
 						heroPos.Y = r.Y + 32;
 						heroSpeed.Y = 0;
 					}
-
-					if (heroSpeed.Y > 0 && heroPos.Y + 64 >= r.Y && heroPos.Y < r.Y) {
-						heroPos.Y = r.Y - 65;
+				*/
+					if (heroSpeed.Y > 0 && heroPos.Y + 60 >= r.Y && heroPos.Y < r.Y) {
+						heroPos.Y = r.Y - 60;
 						heroSpeed.Y = 0;
 						onGround = true;
 					}
-				//}
+				}
 			}
 		}
 
@@ -275,7 +283,7 @@ namespace _27Minutes
 			spriteBatch.Draw(water, new Rectangle(0, winHeight - depth, winWidth, depth), Color.DarkSeaGreen);
 
 			//decel++;
-			if (decel % 12 == 0)
+			if (decel % 15 == 0)
 				depth++;
 
             spriteBatch.End();
