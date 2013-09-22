@@ -27,7 +27,7 @@ namespace _27Minutes
 		//Texture2D wall;
 		//Texture2D floor;
         Texture2D hero;
-		//Texture2D quad;
+		Texture2D water;
         
 		Vector2 heroPos;
         Vector2 heroSpeed;
@@ -43,6 +43,8 @@ namespace _27Minutes
 
 		int scalar = 32;
 		int cameraSpeed = 4;
+		int depth;
+
 		int squaresAcross;
 		int squaresDown;
 
@@ -92,9 +94,8 @@ namespace _27Minutes
 
 			hero = Content.Load<Texture2D>("frogMario");
 
-			//quad = new Texture2D(GraphicsDevice, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
-			//quad.SetData<Color>(new Color[] { Color.White });
-
+			water = new Texture2D(GraphicsDevice, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
+			water.SetData<Color>(new Color[] { new Color(72, 61, 139, 200) });
 			
 			//Tile.TileSetTexture = Content.Load<Texture2D>(@"Textures\TileSets\part1_tileset");
             // TODO: use this.Content to load your game content here
@@ -123,7 +124,7 @@ namespace _27Minutes
 
 			if (ks.IsKeyDown(Keys.OemTilde)) {
 				myMap = new TileMap(rand);
-				return;
+				//return;
 			}
 
 			if (ks.IsKeyDown(Keys.Left))
@@ -211,7 +212,9 @@ namespace _27Minutes
 			onGround = false;
 
 			if (rects.Count > 0) {
-				foreach (Rectangle r in rects) {
+				//foreach (Rectangle r in rects) {
+				Rectangle r = rects[0];
+
 					if (heroSpeed.X < 0 && heroPos.X <= r.X + 32 && heroPos.X > r.X) {
 						heroPos.X = r.X + 32;
 						heroSpeed.X = 0;
@@ -227,12 +230,12 @@ namespace _27Minutes
 						heroSpeed.Y = 0;
 					}
 
-					if (heroSpeed.Y > 0 && heroPos.Y + 64 > r.Y && heroPos.Y < r.Y) {
-						heroPos.Y = r.Y - 64;
+					if (heroSpeed.Y > 0 && heroPos.Y + 64 >= r.Y && heroPos.Y < r.Y) {
+						heroPos.Y = r.Y - 65;
 						heroSpeed.Y = 0;
 						onGround = true;
 					}
-				}
+				//}
 			}
 		}
 
@@ -268,7 +271,13 @@ namespace _27Minutes
 			}
 
 			spriteBatch.Draw(hero, heroPos, null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0);
-			
+
+			spriteBatch.Draw(water, new Rectangle(0, winHeight - depth, winWidth, depth), Color.DarkSeaGreen);
+
+			//decel++;
+			if (decel % 12 == 0)
+				depth++;
+
             spriteBatch.End();
             // TODO: Add your drawing code here
 
