@@ -13,8 +13,6 @@ using Microsoft.Xna.Framework.Storage;
 
 namespace _27Minutes
 {
-	//public enum tileType { SOLID, AIR, LADDER, HAZARD, DOOR }
-
     /// <summary>
     /// This is the main type for your game
     /// </summary>
@@ -30,6 +28,7 @@ namespace _27Minutes
         
 		Vector2 heroPos;
         Vector2 heroSpeed;
+		long decel;
 		
 		Random rand;
 		LinkedList<Room> rooms;
@@ -67,6 +66,8 @@ namespace _27Minutes
 
             heroPos = new Vector2(128, 128);
 			heroSpeed = new Vector2(0, 0);
+			decel = 0;
+
 			squaresDown = 2 + (int)Math.Ceiling((double)(winHeight / scalar));
 			squaresAcross = 1 + (int)Math.Ceiling((double)(winWidth / scalar));
 			
@@ -135,6 +136,8 @@ namespace _27Minutes
 
 			if (ks.IsKeyDown(Keys.Up)) {
 				if (heroPos.Y > 128 || Camera.Location.Y == 0 && heroPos.Y >= 0) {
+					//heroSpeed.Y = 8;
+					//heroPos.Y -= heroSpeed.Y;
 					heroPos.Y -= cameraSpeed;
 				} else {
 					Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y - cameraSpeed, 0, (myMap.MapHeight - squaresDown) * scalar);
@@ -152,25 +155,11 @@ namespace _27Minutes
 			if (ks.IsKeyDown(Keys.OemTilde)) {
 				myMap = new TileMap(rand);
 			}
-
-            /*
-			KeyboardState keyState = Keyboard.GetState();
-			if (keyState.IsKeyDown(Keys.Right))
-				heroSpeed.X = 50;
-			if (keyState.IsKeyDown(Keys.Left))
-				heroSpeed.X = -50;
-			if (keyState.IsKeyDown(Keys.Up))
-				heroSpeed.Y = -50;
-			if (keyState.IsKeyDown(Keys.Down))
-				heroSpeed.Y = 50;
-			if (!keyState.IsKeyDown(Keys.Right) && !keyState.IsKeyDown(Keys.Left))
-				heroSpeed.X = 0;
-			if (!keyState.IsKeyDown(Keys.Up) && !keyState.IsKeyDown(Keys.Down))
-				heroSpeed.Y = 0;
-
-			// Move the sprite by speed, scaled by elapsed time.
-			heroPos.X += heroSpeed.X * (float)gameTime.ElapsedGameTime.TotalSeconds;
-			heroPos.Y += heroSpeed.Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
+			/*
+			decel++;
+			if (decel % 15 == 0) {
+				heroSpeed.Y -= 1;
+			}
 			*/
             base.Update(gameTime);
         }
@@ -217,57 +206,9 @@ namespace _27Minutes
 
             base.Draw(gameTime);
         }
-/*
-		private Rectangle sizeForDraw(Room room) {
-			Rectangle rect = new Rectangle();
-			rect.X = (int) room.getPosition().X;
-			rect.Y = (int)room.getPosition().Y;
-			rect.Width = (int)room.getSize().X * scalar;
-			rect.Height = (int)room.getSize().Y * scalar;
-			return rect;
-		}*/
-		/*
-		private void drawRoom(Room room) {
-			Tile[,] grid = room.getTileGrid();
-			Rectangle temp = new Rectangle();
-			for (int i = 0; i < grid.GetLength(0); i++) {
-				for (int j = 0; j < grid.GetLength(1); j++) {
-					temp.Height = scalar;
-					temp.Width = scalar;
-					temp.X = j*scalar;
-					temp.Y = i*scalar;
-					if (grid[i, j].type == tileType.AIR)
-						spriteBatch.Draw(wall, temp, Color.White);
-					else
-						spriteBatch.Draw(floor, temp, Color.White);
-				}
-			}
-		}
-		*/
-/*
-		protected void generateMap(Random rand) {
-			int mapAreaLimit = 200;
-			int totalArea = 0;
-			Room temp;
-			Rectangle rect;
-			Vector2 size;
 
-			//rooms = new LinkedList<Room>();
+		//private Rectangle collisionDetect() {
 
-			for (int i = 0; i < 5; i++) {
-				rect = new Rectangle();
-				rect.X = rand.Next(GraphicsDevice.Viewport.Width);
-				rect.Y = rand.Next(GraphicsDevice.Viewport.Height);
-				size = Room.getRandSize(rand);
-				rect.Width = (int) size.X;
-				rect.Height = (int) size.Y;
-				temp = new Room(rect);
-				rooms.AddLast(temp);
-			}
-			
-			//exit = rooms.First.Value;
-			//exit.setPosition(50, 50);
-			exit = new Room(0, 0, 2, 1);
-		}*/
+		//}
 	}
 }
