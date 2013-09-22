@@ -7,18 +7,21 @@ public class MapCell {
 
 	public List<int> BaseTiles = new List<int>();
 	public int TileID;
-	public enum tileType { SOLID, AIR, LADDER, HAZARD, DOOR }
+	public enum tileType { AIR, SOLID, LADDER, HAZARD, DOOR }
 
 	public int getTileID() { 
-			return BaseTiles.Count > 0 ? BaseTiles[0] : 0; 
+			return BaseTiles.Count > 0 ? TileID : 0; 
 	}
 
 	public void	setTileID(int value) {
-			if (BaseTiles.Count > 0)
-				BaseTiles[0] = value;
-			else
-				AddBaseTile(value);
+		if (BaseTiles.Count > 0) {
+			BaseTiles[0] = value;
+			TileID = value;
+		} else {
+			AddBaseTile(value);
+			TileID = value;
 		}
+	}
 
 	public void AddBaseTile(int tileID) {
 		BaseTiles.Add(tileID);
@@ -26,6 +29,7 @@ public class MapCell {
 
 	public MapCell(int tileID) {
 		TileID = tileID;
+		AddBaseTile(TileID);
 	}
 
 	public tileType getTileType() {

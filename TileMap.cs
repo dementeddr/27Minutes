@@ -46,19 +46,19 @@ namespace _27Minutes {
 				Rows.Add(thisRow);
 			}
 
-			Rows[MapHeight - 8].Columns[0].BaseTiles[0] = 3;
-			Rows[MapHeight - 8].Columns[1].BaseTiles[0] = 3;
-			Rows[MapHeight - 8].Columns[2].BaseTiles[0] = 3;
+			Rows[MapHeight - 8].Columns[0].setTileID(3);
+			Rows[MapHeight - 8].Columns[1].setTileID(3);
+			Rows[MapHeight - 8].Columns[2].setTileID(3);
 
-			Rows[MapHeight - 10].Columns[MapWidth - 2].BaseTiles[0] = 3;
-			Rows[MapHeight - 10].Columns[MapWidth - 3].BaseTiles[0] = 3;
-			Rows[MapHeight - 10].Columns[MapWidth - 4].BaseTiles[0] = 3;
+			Rows[MapHeight - 10].Columns[MapWidth - 2].setTileID(3);
+			Rows[MapHeight - 10].Columns[MapWidth - 3].setTileID(3);
+			Rows[MapHeight - 10].Columns[MapWidth - 4].setTileID(3);
 
-			Rows[MapHeight - 10].Columns[0].BaseTiles[0] = 6;
-			Rows[MapHeight - 9].Columns[0].BaseTiles[0] = 6;
+			Rows[MapHeight - 10].Columns[0].setTileID(6);
+			Rows[MapHeight - 9].Columns[0].setTileID(6);
 
-			Rows[MapHeight - 12].Columns[MapWidth - 2].BaseTiles[0] = 6;
-			Rows[MapHeight - 11].Columns[MapWidth - 2].BaseTiles[0] = 6;
+			Rows[MapHeight - 12].Columns[MapWidth - 2].setTileID(6);
+			Rows[MapHeight - 11].Columns[MapWidth - 2].setTileID(6);
 
 			for (int i = 4; i < (MapWidth - 5); i++) {
 
@@ -66,11 +66,11 @@ namespace _27Minutes {
 					length = rand.Next(4) + 2;
 					wait = length + rand.Next(3) + 2;
 					prev = nextHeight(rand);
-					Rows[MapHeight - prev].Columns[i].BaseTiles[0] = 3;
+					Rows[MapHeight - prev].Columns[i].setTileID(3);
 
 				} else {
 					if (length > 0) {
-						Rows[MapHeight - prev].Columns[i].BaseTiles[0] = 3;
+						Rows[MapHeight - prev].Columns[i].setTileID(3);
 						length--;
 					}
 					wait--;

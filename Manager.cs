@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework.Storage;
 
 namespace _27Minutes
 {
+	public enum tileType { AIR, SOLID, LADDER, HAZARD, DOOR }
     /// <summary>
     /// This is the main type for your game
     /// </summary>
@@ -21,25 +22,27 @@ namespace _27Minutes
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-		Texture2D wall;
-		Texture2D floor;
+		TileMap myMap;
+
+		//Texture2D wall;
+		//Texture2D floor;
         Texture2D hero;
-		Texture2D quad;
+		//Texture2D quad;
         
 		Vector2 heroPos;
         Vector2 heroSpeed;
 		long decel;
+		bool onGround;
 		
 		Random rand;
-		LinkedList<Room> rooms;
-		Room exit;
+		//LinkedList<Room> rooms;
+		//Room exit;
 
 		int winWidth; 
 		int winHeight; 
 
 		int scalar = 32;
 		int cameraSpeed = 4;
-		TileMap myMap;
 		int squaresAcross;
 		int squaresDown;
 
@@ -67,6 +70,7 @@ namespace _27Minutes
             heroPos = new Vector2(128, 128);
 			heroSpeed = new Vector2(0, 0);
 			decel = 0;
+			onGround = false;
 
 			squaresDown = 2 + (int)Math.Ceiling((double)(winHeight / scalar));
 			squaresAcross = 1 + (int)Math.Ceiling((double)(winWidth / scalar));
@@ -112,32 +116,47 @@ namespace _27Minutes
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
-
-
 			KeyboardState ks = Keyboard.GetState();
+			
+			if (ks.IsKeyDown(Keys.Escape))
+				this.Exit();
+
+			if (ks.IsKeyDown(Keys.Left))
+				heroSpeed.X -= cameraSpeed;
+
+			if (ks.IsKeyDown(Keys.Right))
+				heroSpeed.X += cameraSpeed;
+
+			if (ks.IsKeyDown(Keys.Up) && onGround)
+				heroSpeed.Y -= 8;
+			
+			collisionDetect();
+
 			if (ks.IsKeyDown(Keys.Left)) {
+			//if (heroSpeed.X < 0) {
 				if (heroPos.X > 128 || Camera.Location.X == 0 && heroPos.X >= 0) {
 					heroPos.X -= cameraSpeed;
+					//heroPos.X += heroSpeed.X;
 				} else {
 					Camera.Location.X = MathHelper.Clamp(Camera.Location.X - cameraSpeed, 0, (myMap.MapWidth - squaresAcross) * scalar);
 				}
 			}
 
 			if (ks.IsKeyDown(Keys.Right)) {
+			//if (heroSpeed.X > 0) {
 				if (heroPos.X + 32 < winWidth - 128 || Camera.Location.X + 32 >= myMap.MapWidth * scalar - winWidth && heroPos.X + 32 < winWidth)  {
 					heroPos.X += cameraSpeed;
+					//heroPos.X += heroSpeed.X;
 				} else {
 					Camera.Location.X = MathHelper.Clamp(Camera.Location.X + cameraSpeed, 0, (myMap.MapWidth - squaresAcross) * scalar);
 				}
 			}
 
 			if (ks.IsKeyDown(Keys.Up)) {
+			//if (heroSpeed.Y < 0) {
 				if (heroPos.Y > 128 || Camera.Location.Y == 0 && heroPos.Y >= 0) {
 					//heroSpeed.Y = 8;
-					//heroPos.Y -= heroSpeed.Y;
+					//heroPos.Y += heroSpeed.Y;
 					heroPos.Y -= cameraSpeed;
 				} else {
 					Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y - cameraSpeed, 0, (myMap.MapHeight - squaresDown) * scalar);
@@ -145,8 +164,10 @@ namespace _27Minutes
 			}
 
 			if (ks.IsKeyDown(Keys.Down)) {
+			//if (heroSpeed.Y > 0) {
 				if (heroPos.Y + 64 < winHeight - 128 || Camera.Location.Y + 40 >= myMap.MapHeight * scalar - winHeight && heroPos.Y + 64 < winHeight) {
 					heroPos.Y += cameraSpeed;
+					//heroPos.Y += heroSpeed.Y;
 				} else {
 					Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y + cameraSpeed, 0, (myMap.MapHeight - squaresDown) * scalar);
 				}
@@ -158,26 +179,69 @@ namespace _27Minutes
 			/*
 			decel++;
 			if (decel % 15 == 0) {
-				heroSpeed.Y -= 1;
+				heroSpeed.Y += 1;
 			}
 			*/
+			//heroSpeed = Vector2.Zero;
+			
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw(GameTime gameTime) {
+		private void collisionDetect() {
+
+			List<Rectangle> rects = new List<Rectangle>();
+			
+			int x = (int) (heroPos.X /*+ heroSpeed.X*/ + Camera.Location.X) / scalar;
+			int y = (int) (heroPos.Y /*+ heroSpeed.Y*/ + Camera.Location.Y) / scalar;
+
+			//Console.Write(myMap.Rows[y].Columns[x].getTileType());
+
+			for (int i=0; i<3; i++) {
+				if ((int)myMap.Rows[y + i].Columns[x].getTileType() == (int)tileType.SOLID) {
+					rects.Add(new Rectangle(x * scalar, (y + i) * scalar, scalar, scalar));
+				}
+			}
+			
+			for (int i = 0; i < 3; i++) {
+				if ((int)myMap.Rows[y + i].Columns[x+1].getTileType() == (int)tileType.SOLID)
+					rects.Add(new Rectangle((x+1) * scalar, (y + i) * scalar, scalar, scalar));
+			}
+
+			if (rects.Count > 0) {
+				foreach (Rectangle r in rects) {
+					if (heroSpeed.X < 0 && heroPos.X > r.X) {
+						heroPos.X = r.X + 32;
+						heroSpeed.X = 0;
+					}
+
+					if (heroSpeed.X > 0 && heroPos.X < r.X) {
+						heroPos.X = r.X - 32;
+						heroSpeed.X = 0;
+					}
+
+					if (heroSpeed.Y < 0 && heroPos.Y > r.Y) {
+						heroPos.Y = r.Y + 64;
+						heroSpeed.Y = 0;
+					}
+
+					if (heroSpeed.Y > 0 && heroPos.Y < r.Y) {
+						heroPos.Y = r.Y - 64;
+						heroSpeed.Y = 0;
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// This is called when the game should draw itself.
+		/// </summary>
+		/// <param name="gameTime">Provides a snapshot of timing values.</param>
+		protected override void Draw(GameTime gameTime) {
 			
 			//Rectangle rect;
             GraphicsDevice.Clear(Color.DarkOliveGreen);
 
             spriteBatch.Begin(SpriteBlendMode.AlphaBlend);
-
-			//drawRoom(exit);
-
-			//spriteBatch.Begin();
 
 			Vector2 firstSquare = new Vector2(Camera.Location.X / scalar, Camera.Location.Y / scalar);
 			int firstX = (int) firstSquare.X;
@@ -206,9 +270,5 @@ namespace _27Minutes
 
             base.Draw(gameTime);
         }
-
-		//private Rectangle collisionDetect() {
-
-		//}
 	}
 }
