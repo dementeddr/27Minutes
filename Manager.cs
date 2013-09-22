@@ -127,62 +127,62 @@ namespace _27Minutes
 			if (ks.IsKeyDown(Keys.Right))
 				heroSpeed.X += cameraSpeed;
 
-			if (ks.IsKeyDown(Keys.Up) && onGround)
+			if (ks.IsKeyDown(Keys.Up) && heroPos.Y + 64 >= winHeight  /*&& onGround*/)
 				heroSpeed.Y -= 8;
 			
-			collisionDetect();
+			//collisionDetect();
 
-			if (ks.IsKeyDown(Keys.Left)) {
-			//if (heroSpeed.X < 0) {
+			//if (ks.IsKeyDown(Keys.Left)) {
+			if (heroSpeed.X < 0) {
 				if (heroPos.X > 128 || Camera.Location.X == 0 && heroPos.X >= 0) {
-					heroPos.X -= cameraSpeed;
-					//heroPos.X += heroSpeed.X;
+					//heroPos.X -= cameraSpeed;
+					heroPos.X += heroSpeed.X;
 				} else {
-					Camera.Location.X = MathHelper.Clamp(Camera.Location.X - cameraSpeed, 0, (myMap.MapWidth - squaresAcross) * scalar);
+					Camera.Location.X = MathHelper.Clamp(Camera.Location.X + heroSpeed.X, 0, (myMap.MapWidth - squaresAcross) * scalar);
 				}
 			}
 
-			if (ks.IsKeyDown(Keys.Right)) {
-			//if (heroSpeed.X > 0) {
+			//if (ks.IsKeyDown(Keys.Right)) {
+			if (heroSpeed.X > 0) {
 				if (heroPos.X + 32 < winWidth - 128 || Camera.Location.X + 32 >= myMap.MapWidth * scalar - winWidth && heroPos.X + 32 < winWidth)  {
-					heroPos.X += cameraSpeed;
-					//heroPos.X += heroSpeed.X;
+					//heroPos.X += cameraSpeed;
+					heroPos.X += heroSpeed.X;
 				} else {
-					Camera.Location.X = MathHelper.Clamp(Camera.Location.X + cameraSpeed, 0, (myMap.MapWidth - squaresAcross) * scalar);
+					Camera.Location.X = MathHelper.Clamp(Camera.Location.X + heroSpeed.X, 0, (myMap.MapWidth - squaresAcross) * scalar);
 				}
 			}
 
-			if (ks.IsKeyDown(Keys.Up)) {
-			//if (heroSpeed.Y < 0) {
+			//if (ks.IsKeyDown(Keys.Up)) {
+			if (heroSpeed.Y < 0) {
 				if (heroPos.Y > 128 || Camera.Location.Y == 0 && heroPos.Y >= 0) {
 					//heroSpeed.Y = 8;
-					//heroPos.Y += heroSpeed.Y;
-					heroPos.Y -= cameraSpeed;
+					heroPos.Y += heroSpeed.Y;
+					//heroPos.Y -= cameraSpeed;
 				} else {
-					Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y - cameraSpeed, 0, (myMap.MapHeight - squaresDown) * scalar);
+					Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y + heroSpeed.Y, 0, (myMap.MapHeight - squaresDown) * scalar);
 				}
 			}
 
-			if (ks.IsKeyDown(Keys.Down)) {
-			//if (heroSpeed.Y > 0) {
+			//if (ks.IsKeyDown(Keys.Down)) {
+			if (heroSpeed.Y > 0) {
 				if (heroPos.Y + 64 < winHeight - 128 || Camera.Location.Y + 40 >= myMap.MapHeight * scalar - winHeight && heroPos.Y + 64 < winHeight) {
-					heroPos.Y += cameraSpeed;
-					//heroPos.Y += heroSpeed.Y;
+					//heroPos.Y += cameraSpeed;
+					heroPos.Y += heroSpeed.Y;
 				} else {
-					Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y + cameraSpeed, 0, (myMap.MapHeight - squaresDown) * scalar);
+					Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y + heroSpeed.Y, 0, (myMap.MapHeight - squaresDown) * scalar);
 				}
 			}
 
 			if (ks.IsKeyDown(Keys.OemTilde)) {
-				myMap = new TileMap(rand);
+				myMap = new TileMap (rand);
 			}
-			/*
+			
 			decel++;
-			if (decel % 15 == 0) {
+			if (decel % 6 == 0 && !onGround) {
 				heroSpeed.Y += 1;
 			}
-			*/
-			//heroSpeed = Vector2.Zero;
+
+			heroSpeed.X = 0;
 			
             base.Update(gameTime);
         }
@@ -191,8 +191,8 @@ namespace _27Minutes
 
 			List<Rectangle> rects = new List<Rectangle>();
 			
-			int x = (int) (heroPos.X /*+ heroSpeed.X*/ + Camera.Location.X) / scalar;
-			int y = (int) (heroPos.Y /*+ heroSpeed.Y*/ + Camera.Location.Y) / scalar;
+			int x = (int) (heroPos.X + heroSpeed.X + Camera.Location.X) / scalar;
+			int y = (int) (heroPos.Y + heroSpeed.Y + Camera.Location.Y) / scalar;
 
 			//Console.Write(myMap.Rows[y].Columns[x].getTileType());
 
@@ -209,24 +209,25 @@ namespace _27Minutes
 
 			if (rects.Count > 0) {
 				foreach (Rectangle r in rects) {
-					if (heroSpeed.X < 0 && heroPos.X > r.X) {
+					if (heroSpeed.X < 0 && heroPos.X <= r.X + 32 && heroPos.X > r.X) {
 						heroPos.X = r.X + 32;
 						heroSpeed.X = 0;
 					}
 
-					if (heroSpeed.X > 0 && heroPos.X < r.X) {
+					if (heroSpeed.X > 0 && heroPos.X + 32 >= r.X && heroPos.X < r.X) {
 						heroPos.X = r.X - 32;
 						heroSpeed.X = 0;
 					}
 
-					if (heroSpeed.Y < 0 && heroPos.Y > r.Y) {
+					if (heroSpeed.Y < 0 && heroPos.Y < r.Y + 32 && heroPos.Y > r.Y) {
 						heroPos.Y = r.Y + 64;
 						heroSpeed.Y = 0;
 					}
 
-					if (heroSpeed.Y > 0 && heroPos.Y < r.Y) {
+					if (heroSpeed.Y > 0 && heroPos.Y + 64 > r.Y && heroPos.Y < r.Y) {
 						heroPos.Y = r.Y - 64;
 						heroSpeed.Y = 0;
+						onGround = true;
 					}
 				}
 			}
