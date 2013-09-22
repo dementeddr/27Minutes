@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Storage;
 
 namespace _27Minutes
 {
-	public enum tileType { SOLID, AIR, LADDER, HAZARD, DOOR }
+	//public enum tileType { SOLID, AIR, LADDER, HAZARD, DOOR }
 
     /// <summary>
     /// This is the main type for your game
@@ -37,7 +37,7 @@ namespace _27Minutes
 
 		int scalar = 32;
 		int cameraSpeed = 4;
-		TileMap myMap;
+		TileMap2 myMap;
 		int squaresAcross;
 		int squaresDown;
 
@@ -57,9 +57,9 @@ namespace _27Minutes
         {
             // TODO: Add your initialization logic here
             rand = new Random(); //TODO Add seeds
-			myMap = new TileMap(rand);
+			myMap = new TileMap2(rand);
 
-            heroPos = Vector2.Zero;
+            heroPos = new Vector2(128, 128);
 			heroSpeed = new Vector2(0, 0);
 			squaresDown = 2 + (int)Math.Ceiling((double)(graphics.GraphicsDevice.Viewport.Height / scalar));
 			squaresAcross = 1 + (int)Math.Ceiling((double)(graphics.GraphicsDevice.Viewport.Width / scalar));
@@ -78,6 +78,8 @@ namespace _27Minutes
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 			TileManager.initialize(Content);
+
+			hero = Content.Load<Texture2D>("frogMario");
 
 			quad = new Texture2D(GraphicsDevice, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
 			quad.SetData<Color>(new Color[] { Color.White });
@@ -157,8 +159,7 @@ namespace _27Minutes
             GraphicsDevice.Clear(Color.DarkOliveGreen);
 
             spriteBatch.Begin(SpriteBlendMode.AlphaBlend);
-		
-			//spriteBatch.Draw(hero, heroPos, null, Color.White, 0f, Vector2.Zero, 3.0f, SpriteEffects.None, 1f);
+
 			//drawRoom(exit);
 
 			//spriteBatch.Begin();
@@ -182,13 +183,15 @@ namespace _27Minutes
 					}
 				}
 			}
+
+			spriteBatch.Draw(hero, heroPos, null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0);
 			
             spriteBatch.End();
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }
-
+/*
 		private Rectangle sizeForDraw(Room room) {
 			Rectangle rect = new Rectangle();
 			rect.X = (int) room.getPosition().X;
@@ -196,7 +199,7 @@ namespace _27Minutes
 			rect.Width = (int)room.getSize().X * scalar;
 			rect.Height = (int)room.getSize().Y * scalar;
 			return rect;
-		}
+		}*/
 		/*
 		private void drawRoom(Room room) {
 			Tile[,] grid = room.getTileGrid();
@@ -215,7 +218,7 @@ namespace _27Minutes
 			}
 		}
 		*/
-
+/*
 		protected void generateMap(Random rand) {
 			int mapAreaLimit = 200;
 			int totalArea = 0;
@@ -225,7 +228,7 @@ namespace _27Minutes
 
 			//rooms = new LinkedList<Room>();
 
-			/*for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 5; i++) {
 				rect = new Rectangle();
 				rect.X = rand.Next(GraphicsDevice.Viewport.Width);
 				rect.Y = rand.Next(GraphicsDevice.Viewport.Height);
@@ -235,10 +238,10 @@ namespace _27Minutes
 				temp = new Room(rect);
 				rooms.AddLast(temp);
 			}
-			*/
+			
 			//exit = rooms.First.Value;
 			//exit.setPosition(50, 50);
 			exit = new Room(0, 0, 2, 1);
-		}
+		}*/
 	}
 }

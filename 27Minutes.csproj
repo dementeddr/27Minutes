@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Camera.cs" />
+    <Compile Include="TileMap2.cs" />
     <Compile Include="TileMap.cs" />
     <Compile Include="MapRow.cs" />
     <Compile Include="TileManager.cs" />
