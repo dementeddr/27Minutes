@@ -7,6 +7,6 @@ using Microsoft.Xna.Framework;
 namespace _27Minutes {
 	static class Camera {
 
-		static public Vector2 Location = new Vector2(64,64);
+		static public Vector2 Location = Vector2.Zero;//new Vector2(64,64);
 	}
 }

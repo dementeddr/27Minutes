@@ -35,6 +35,9 @@ namespace _27Minutes
 		LinkedList<Room> rooms;
 		Room exit;
 
+		int winWidth; 
+		int winHeight; 
+
 		int scalar = 32;
 		int cameraSpeed = 4;
 		TileMap2 myMap;
@@ -59,10 +62,13 @@ namespace _27Minutes
             rand = new Random(); //TODO Add seeds
 			myMap = new TileMap2(rand);
 
+			winWidth = graphics.GraphicsDevice.Viewport.Width;
+			winHeight = graphics.GraphicsDevice.Viewport.Height;
+
             heroPos = new Vector2(128, 128);
 			heroSpeed = new Vector2(0, 0);
-			squaresDown = 2 + (int)Math.Ceiling((double)(graphics.GraphicsDevice.Viewport.Height / scalar));
-			squaresAcross = 1 + (int)Math.Ceiling((double)(graphics.GraphicsDevice.Viewport.Width / scalar));
+			squaresDown = 2 + (int)Math.Ceiling((double)(winHeight / scalar));
+			squaresAcross = 1 + (int)Math.Ceiling((double)(winWidth / scalar));
 			
 			//generateMap(rand);
 
@@ -81,8 +87,8 @@ namespace _27Minutes
 
 			hero = Content.Load<Texture2D>("frogMario");
 
-			quad = new Texture2D(GraphicsDevice, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
-			quad.SetData<Color>(new Color[] { Color.White });
+			//quad = new Texture2D(GraphicsDevice, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
+			//quad.SetData<Color>(new Color[] { Color.White });
 
 			
 			//Tile.TileSetTexture = Content.Load<Texture2D>(@"Textures\TileSets\part1_tileset");
@@ -112,19 +118,39 @@ namespace _27Minutes
 
 			KeyboardState ks = Keyboard.GetState();
 			if (ks.IsKeyDown(Keys.Left)) {
-				Camera.Location.X = MathHelper.Clamp(Camera.Location.X - cameraSpeed, 0, (myMap.MapWidth - squaresAcross) * scalar);
+				if (heroPos.X > 128 || Camera.Location.X == 0 && heroPos.X >= 0) {
+					heroPos.X -= cameraSpeed;
+				} else {
+					Camera.Location.X = MathHelper.Clamp(Camera.Location.X - cameraSpeed, 0, (myMap.MapWidth - squaresAcross) * scalar);
+				}
 			}
 
+			Console.Write((Camera.Location.Y ));
+			Console.Write(" ");
+			Console.WriteLine((myMap.MapHeight * scalar - winHeight));
+
 			if (ks.IsKeyDown(Keys.Right)) {
-				Camera.Location.X = MathHelper.Clamp(Camera.Location.X + cameraSpeed, 0, (myMap.MapWidth - squaresAcross) * scalar);
+				if (heroPos.X + 32 < winWidth - 128 || Camera.Location.X + 32 >= myMap.MapWidth * scalar - winWidth && heroPos.X + 32 < winWidth)  {
+					heroPos.X += cameraSpeed;
+				} else {
+					Camera.Location.X = MathHelper.Clamp(Camera.Location.X + cameraSpeed, 0, (myMap.MapWidth - squaresAcross) * scalar);
+				}
 			}
 
 			if (ks.IsKeyDown(Keys.Up)) {
-				Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y - cameraSpeed, 0, (myMap.MapHeight - squaresDown) * scalar);
+				if (heroPos.Y > 128 || Camera.Location.Y == 0 && heroPos.Y >= 0) {
+					heroPos.Y -= cameraSpeed;
+				} else {
+					Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y - cameraSpeed, 0, (myMap.MapHeight - squaresDown) * scalar);
+				}
 			}
 
 			if (ks.IsKeyDown(Keys.Down)) {
-				Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y + cameraSpeed, 0, (myMap.MapHeight - squaresDown) * scalar);
+				if (heroPos.Y + 64 < winHeight - 128 || Camera.Location.Y + 40 >= myMap.MapHeight * scalar - winHeight && heroPos.Y + 64 < winHeight) {
+					heroPos.Y += cameraSpeed;
+				} else {
+					Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y + cameraSpeed, 0, (myMap.MapHeight - squaresDown) * scalar);
+				}
 			}
 
             /*
