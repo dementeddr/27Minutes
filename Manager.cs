@@ -40,7 +40,7 @@ namespace _27Minutes
 
 		int scalar = 32;
 		int cameraSpeed = 4;
-		TileMap2 myMap;
+		TileMap myMap;
 		int squaresAcross;
 		int squaresDown;
 
@@ -60,7 +60,7 @@ namespace _27Minutes
         {
             // TODO: Add your initialization logic here
             rand = new Random(); //TODO Add seeds
-			myMap = new TileMap2(rand);
+			myMap = new TileMap(rand);
 
 			winWidth = graphics.GraphicsDevice.Viewport.Width;
 			winHeight = graphics.GraphicsDevice.Viewport.Height;
@@ -125,10 +125,6 @@ namespace _27Minutes
 				}
 			}
 
-			Console.Write((Camera.Location.Y ));
-			Console.Write(" ");
-			Console.WriteLine((myMap.MapHeight * scalar - winHeight));
-
 			if (ks.IsKeyDown(Keys.Right)) {
 				if (heroPos.X + 32 < winWidth - 128 || Camera.Location.X + 32 >= myMap.MapWidth * scalar - winWidth && heroPos.X + 32 < winWidth)  {
 					heroPos.X += cameraSpeed;
@@ -151,6 +147,10 @@ namespace _27Minutes
 				} else {
 					Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y + cameraSpeed, 0, (myMap.MapHeight - squaresDown) * scalar);
 				}
+			}
+
+			if (ks.IsKeyDown(Keys.OemTilde)) {
+				myMap = new TileMap(rand);
 			}
 
             /*
