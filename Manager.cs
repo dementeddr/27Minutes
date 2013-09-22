@@ -67,7 +67,7 @@ namespace _27Minutes
 			winWidth = graphics.GraphicsDevice.Viewport.Width;
 			winHeight = graphics.GraphicsDevice.Viewport.Height;
 
-            heroPos = new Vector2(128, 128);
+            heroPos = new Vector2(64, 128);
 			heroSpeed = new Vector2(0, 0);
 			decel = 0;
 			onGround = false;
@@ -121,6 +121,11 @@ namespace _27Minutes
 			if (ks.IsKeyDown(Keys.Escape))
 				this.Exit();
 
+			if (ks.IsKeyDown(Keys.OemTilde)) {
+				myMap = new TileMap(rand);
+				return;
+			}
+
 			if (ks.IsKeyDown(Keys.Left))
 				heroSpeed.X -= cameraSpeed;
 
@@ -172,10 +177,6 @@ namespace _27Minutes
 					Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y + heroSpeed.Y, 0, (myMap.MapHeight - squaresDown) * scalar);
 				}
 			}
-
-			if (ks.IsKeyDown(Keys.OemTilde)) {
-				myMap = new TileMap (rand);
-			}
 			
 			decel++;
 			if (decel % 6 == 0 && !onGround) {
@@ -207,6 +208,8 @@ namespace _27Minutes
 					rects.Add(new Rectangle((x+1) * scalar, (y + i) * scalar, scalar, scalar));
 			}
 
+			onGround = false;
+
 			if (rects.Count > 0) {
 				foreach (Rectangle r in rects) {
 					if (heroSpeed.X < 0 && heroPos.X <= r.X + 32 && heroPos.X > r.X) {
@@ -220,7 +223,7 @@ namespace _27Minutes
 					}
 
 					if (heroSpeed.Y < 0 && heroPos.Y < r.Y + 32 && heroPos.Y > r.Y) {
-						heroPos.Y = r.Y + 64;
+						heroPos.Y = r.Y + 32;
 						heroSpeed.Y = 0;
 					}
 
