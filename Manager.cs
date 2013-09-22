@@ -36,6 +36,7 @@ namespace _27Minutes
 		Room exit;
 
 		int scalar = 32;
+		int cameraSpeed = 4;
 		TileMap myMap;
 		int squaresAcross;
 		int squaresDown;
@@ -57,10 +58,12 @@ namespace _27Minutes
             // TODO: Add your initialization logic here
             rand = new Random(); //TODO Add seeds
 			myMap = new TileMap(rand);
+
             heroPos = Vector2.Zero;
 			heroSpeed = new Vector2(0, 0);
 			squaresDown = 2 + (int)Math.Ceiling((double)(graphics.GraphicsDevice.Viewport.Height / scalar));
 			squaresAcross = 1 + (int)Math.Ceiling((double)(graphics.GraphicsDevice.Viewport.Width / scalar));
+			
 			//generateMap(rand);
 
             base.Initialize();
@@ -74,14 +77,12 @@ namespace _27Minutes
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            hero = Content.Load<Texture2D>("marioSprite1");
-			wall = Content.Load<Texture2D>("grey_dirt3");
-			floor = Content.Load<Texture2D>("floor_vines3");
+			TileManager.initialize(Content);
 
 			quad = new Texture2D(GraphicsDevice, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
 			quad.SetData<Color>(new Color[] { Color.White });
 
-			Tile.texture = Content.Load<Texture2D>("grey_dirt3");
+			
 			//Tile.TileSetTexture = Content.Load<Texture2D>(@"Textures\TileSets\part1_tileset");
             // TODO: use this.Content to load your game content here
         }
@@ -109,19 +110,19 @@ namespace _27Minutes
 
 			KeyboardState ks = Keyboard.GetState();
 			if (ks.IsKeyDown(Keys.Left)) {
-				Camera.Location.X = MathHelper.Clamp(Camera.Location.X - 2, 0, (myMap.MapWidth - squaresAcross) * scalar);
+				Camera.Location.X = MathHelper.Clamp(Camera.Location.X - cameraSpeed, 0, (myMap.MapWidth - squaresAcross) * scalar);
 			}
 
 			if (ks.IsKeyDown(Keys.Right)) {
-				Camera.Location.X = MathHelper.Clamp(Camera.Location.X + 2, 0, (myMap.MapWidth - squaresAcross) * scalar);
+				Camera.Location.X = MathHelper.Clamp(Camera.Location.X + cameraSpeed, 0, (myMap.MapWidth - squaresAcross) * scalar);
 			}
 
 			if (ks.IsKeyDown(Keys.Up)) {
-				Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y - 2, 0, (myMap.MapHeight - squaresDown) * scalar);
+				Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y - cameraSpeed, 0, (myMap.MapHeight - squaresDown) * scalar);
 			}
 
 			if (ks.IsKeyDown(Keys.Down)) {
-				Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y + 2, 0, (myMap.MapHeight - squaresDown) * scalar);
+				Camera.Location.Y = MathHelper.Clamp(Camera.Location.Y + cameraSpeed, 0, (myMap.MapHeight - squaresDown) * scalar);
 			}
 
             /*
@@ -172,11 +173,13 @@ namespace _27Minutes
 
 			for (int y = 0; y < squaresDown; y++) {
 				for (int x = 0; x < squaresAcross; x++) {
-					spriteBatch.Draw(
-						Tile.texture,
-						new Rectangle((x * scalar) - offsetX, (y * scalar) - offsetY, scalar, scalar),
-						Tile.GetSourceRectangle(myMap.Rows[y + firstY].Columns[x + firstX].TileID, scalar),
-						Color.White);
+					foreach (int tileID in myMap.Rows[y + firstY].Columns[x + firstX].BaseTiles) {
+						spriteBatch.Draw(
+							TileManager.getTexture(tileID),
+							new Rectangle((x * scalar) - offsetX, (y * scalar) - offsetY, scalar, scalar),
+							TileManager.GetSourceRectangle(),
+							Color.White);
+					}
 				}
 			}
 			
