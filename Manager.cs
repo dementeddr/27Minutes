@@ -133,7 +133,7 @@ namespace _27Minutes
 			if (ks.IsKeyDown(Keys.Right))
 				heroSpeed.X += cameraSpeed;
 
-			if (ks.IsKeyDown(Keys.Up) &&  onGround)
+			if (ks.IsKeyDown(Keys.Up) && onGround)
 				heroSpeed.Y -= 8;
 			
 			collisionDetect();
@@ -197,7 +197,8 @@ namespace _27Minutes
 
 		private void collisionDetect() {
 
-			List<Rectangle> rects = new List<Rectangle>();
+			//List<Rectangle> rects = new List<Rectangle>();
+			Rectangle[] rects;
 			
 			int x = (int) (heroPos.X + heroSpeed.X + Camera.Location.X) / scalar;
 			int y = (int) (heroPos.Y + heroSpeed.Y + Camera.Location.Y) / scalar;
@@ -214,43 +215,84 @@ namespace _27Minutes
 				if ((int)myMap.Rows[y + i].Columns[x+1].getTileType() == (int)tileType.SOLID)
 					rects.Add(new Rectangle((x+1) * scalar, (y + i) * scalar, scalar, scalar));
 			}*/
+			
+			//if (heroSpeed.X < 0) {
+			rects = new Rectangle[3];
 
-			if ((int)myMap.Rows[y + 2].Columns[x].getTileType() == (int)tileType.SOLID) {
-				rects.Add(new Rectangle(x * scalar, (y + 2) * scalar, scalar, scalar));
-			}
-
-			if ((int)myMap.Rows[y + 2].Columns[x+1].getTileType() == (int)tileType.SOLID) {
-					rects.Add(new Rectangle((x+1) * scalar, (y + 2) * scalar, scalar, scalar));
-			}
-
-			onGround = false;
-
-			if (rects.Count > 0) {
-				foreach (Rectangle r in rects) {
-				//Rectangle r = rects[0];
-				/*
-					if (heroSpeed.X < 0 && heroPos.X <= r.X + 32 && heroPos.X > r.X) {
-						heroPos.X = r.X + 32;
-						heroSpeed.X = 0;
-					}
-
-					if (heroSpeed.X > 0 && heroPos.X + 32 >= r.X && heroPos.X < r.X) {
-						heroPos.X = r.X - 32;
-						heroSpeed.X = 0;
-					}
-
-					if (heroSpeed.Y < 0 && heroPos.Y < r.Y + 32 && heroPos.Y > r.Y) {
-						heroPos.Y = r.Y + 32;
-						heroSpeed.Y = 0;
-					}
-				*/
-					if (heroSpeed.Y > 0 && heroPos.Y + 60 >= r.Y && heroPos.Y < r.Y) {
-						heroPos.Y = r.Y - 60;
-						heroSpeed.Y = 0;
-						onGround = true;
+				for (int i = 0; i < 3; i++) {
+					if ((int)myMap.Rows[y + i].Columns[x].getTileType() == (int)tileType.SOLID) {
+						rects[i] = new Rectangle((x) * scalar, (y + i) * scalar, scalar, scalar);
 					}
 				}
-			}
+
+				//if (rects.Length > 0) {
+					foreach (Rectangle r in rects) {
+
+						if (heroSpeed.X < 0 && heroPos.X <= r.X + 32 && heroPos.X > r.X) {
+							heroPos.X = r.X + 32;
+							heroSpeed.X = 0;
+						}
+					}
+				//}
+			//}
+			
+			//if (heroSpeed.Y < 0) {
+			rects = new Rectangle[2];
+
+				if ((int)myMap.Rows[y].Columns[x].getTileType() == (int)tileType.SOLID) {
+					rects[0] = new Rectangle(x * scalar, y * scalar, scalar, scalar);
+				}
+
+				if ((int)myMap.Rows[y].Columns[x + 1].getTileType() == (int)tileType.SOLID) {
+					rects[1] = new Rectangle((x + 1) * scalar, y * scalar, scalar, scalar);
+				}
+
+				//if (rects.Length > 0) {
+					foreach (Rectangle r in rects) {
+
+						if (heroSpeed.Y < 0 && heroPos.Y < r.Y + 32 && heroPos.Y > r.Y) {
+							heroPos.Y = r.Y + 32;
+							heroSpeed.Y = 0;
+						}
+					}
+				//}
+			//}
+			
+			//if (heroSpeed.Y >= 0) {
+			rects = new Rectangle[2];
+				
+				onGround = false;
+
+				if ((int)myMap.Rows[y + 2].Columns[x].getTileType() == (int)tileType.SOLID) {
+					rects[0] = new Rectangle(x * scalar, (y + 2) * scalar, scalar, scalar);
+				}
+
+				if ((int)myMap.Rows[y + 2].Columns[x + 1].getTileType() == (int)tileType.SOLID) {
+					rects[1] = new Rectangle((x + 1) * scalar, (y + 2) * scalar, scalar, scalar);
+				}
+
+				//if (rects.Length > 0) {
+					foreach (Rectangle r in rects) {
+
+						if (heroSpeed.Y > 0 && heroPos.Y + 60 >= r.Y && heroPos.Y < r.Y) {
+							heroPos.Y = r.Y - 60;
+							heroSpeed.Y = 0;
+							onGround = true;
+						}
+					}
+				//}
+			//}
+			//Rectangle r = rects[0];
+			/*
+				
+
+				if (heroSpeed.X > 0 && heroPos.X + 32 >= r.X && heroPos.X < r.X) {
+					heroPos.X = r.X - 32;
+					heroSpeed.X = 0;
+				}
+
+				
+			*/
 		}
 
 		/// <summary>
@@ -289,8 +331,8 @@ namespace _27Minutes
 			spriteBatch.Draw(water, new Rectangle(0, winHeight - depth, winWidth, depth), Color.DarkSeaGreen);
 
 			//decel++;
-			if (decel % 15 == 0)
-				depth++;
+			//if (decel % 15 == 0)
+			//	depth++;
 
             spriteBatch.End();
             // TODO: Add your drawing code here
