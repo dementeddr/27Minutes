@@ -10,7 +10,7 @@ namespace _27Minutes {
 	public class TileMap {
 
 		public List<MapRow> Rows = new List<MapRow>();
-		public int MapWidth = 60;
+		public int MapWidth = 100;
 		public int MapHeight = 20;
 		//private int[] path;
 		private int dist = 0;
@@ -66,11 +66,18 @@ namespace _27Minutes {
 					length = rand.Next(4) + 2;
 					wait = length + rand.Next(3) + 2;
 					prev = nextHeight(rand);
-					Rows[MapHeight - prev].Columns[i].setTileID(3);
+
+					if (rand.Next(4) >= 3)
+						Rows[MapHeight - prev].Columns[i].setTileID(8);
+					else Rows[MapHeight - prev].Columns[i].setTileID(3);
 
 				} else {
 					if (length > 0) {
-						Rows[MapHeight - prev].Columns[i].setTileID(3);
+
+						if (rand.Next(4) >= 3)
+							Rows[MapHeight - prev].Columns[i].setTileID(8);
+						else Rows[MapHeight - prev].Columns[i].setTileID(3);
+
 						length--;
 					}
 					wait--;

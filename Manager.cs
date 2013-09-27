@@ -122,9 +122,9 @@ namespace _27Minutes
 			if (ks.IsKeyDown(Keys.Escape))
 				this.Exit();
 
-			if (ks.IsKeyDown(Keys.OemTilde)) {
+			if (ks.IsKeyDown(Keys.Space)) {
 				myMap = new TileMap(rand);
-				//return;
+				return;
 			}
 
 			if (ks.IsKeyDown(Keys.Left))
@@ -185,7 +185,13 @@ namespace _27Minutes
 			}
 
 			heroSpeed.X = 0;
-			
+
+
+			if (winHeight - depth < heroPos.Y) {
+				this.Exit();
+			}
+
+
             base.Update(gameTime);
         }
 
