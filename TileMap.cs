@@ -13,10 +13,10 @@ namespace _27Minutes {
 		public int MapWidth = 100;
 		public int MapHeight = 20;
 		//private int[] path;
-		private int dist = 0;
+		//private int dist = 0;
 		private int wait = 0;
 		private int length = 0;
-		private int height = 0;
+		//private int height = 0;
 		private int prev = 9;
 		private int temp;
 
