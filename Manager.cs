@@ -38,12 +38,13 @@ namespace _27Minutes
 		Random rand;		//Seed-based random number generator
 		//LinkedList<Room> rooms;
 		//Room exit;
+		Rectangle[] temp;
 
 		int winWidth;		//Pixel-width of the viewport
 		int winHeight;		//Pizel-height of the viewport
 
 		int scalar = 32;	//Pixel-length of the side of a tile
-		int cameraSpeed = 1;//How many pixels the hero will move each frame
+		int cameraSpeed = 4;//How many pixels the hero will move each frame
 		int depth;			//Current depth of the water
 
 		int squaresAcross;	//How many tiles fit on the screen horizontally
@@ -74,8 +75,9 @@ namespace _27Minutes
 			winWidth = graphics.GraphicsDevice.Viewport.Width;
 			winHeight = graphics.GraphicsDevice.Viewport.Height;
 
-			//Initial speed and position of the hero, and it's relation to gravity
-            heroPos = new Vector2(64, (myMap.MapHeight - 9) * scalar);
+			//Initial speed and position of the hero, and it's relation to gravity. Needs to be generalized
+			//for different maps
+            heroPos = new Vector2(64, (myMap.MapHeight - 11) * scalar);
 			heroSpeed = new Vector2(0, 0);
 			decel = 0;
 			onGround = false;
@@ -83,6 +85,8 @@ namespace _27Minutes
 			//The tile-in-screen dimensions are defined by the scalar value
 			squaresDown = 2 + (int)Math.Ceiling((double)(winHeight / scalar));
 			squaresAcross = 1 + (int)Math.Ceiling((double)(winWidth / scalar));
+
+			temp = new Rectangle[2];
 
             base.Initialize();
         }
@@ -146,9 +150,6 @@ namespace _27Minutes
 			//Jumping, only if in contact with ground
 			if (ks.IsKeyDown(Keys.Up) && onGround)
 				heroSpeed.Y -= 8;
-
-			//DEBUG
-			Console.WriteLine("X: " + (heroPos.X + Camera.Location.X)+ "  Y: " + heroPos.Y);
 			
 			//Is the character touching the terrain? Modifies or zeroes out the heroSpeed vectors as necessary, depending upon contact with terrain
 			collisionDetect();
@@ -227,7 +228,11 @@ namespace _27Minutes
 			int x = (int) (heroPos.X + heroSpeed.X + Camera.Location.X) / scalar;
 			int y = (int) (heroPos.Y + heroSpeed.Y + Camera.Location.Y) / scalar;
 
-			//Console.Write(myMap.Rows[y].Columns[x].getTileType());
+			//DEBUG
+			Console.WriteLine("X: " + x + "  Y: " + y);
+			Console.WriteLine("heroPos.X: " + heroPos.X + "  heroPos.Y: " + heroPos.Y);
+
+
 			/*
 			for (int i=0; i<3; i++) {
 				if ((int)myMap.Rows[y + i].Columns[x].getTileType() == (int)tileType.SOLID) {
@@ -300,13 +305,15 @@ namespace _27Minutes
 				//if (rects.Length > 0) {
 					foreach (Rectangle r in rects) {
 
-						//if (heroSpeed.Y > 0 && heroPos.Y + 60 >= r.Y && heroPos.Y < r.Y) {
-						if (heroSpeed.Y > 0 && heroRect.Intersects(r)) {
+						if (heroSpeed.Y > 0 && heroPos.Y + 60 >= r.Y && heroPos.Y < r.Y) {
+						//if (heroSpeed.Y > 0 && heroRect.Intersects(r)) {
 							heroPos.Y = r.Y - 60;
 							heroSpeed.Y = 0;
 							onGround = true;
 						}
 					}
+
+					temp = rects;
 				//}
 			//}
 			//Rectangle r = rects[0];
@@ -356,6 +363,9 @@ namespace _27Minutes
 			spriteBatch.Draw(hero, heroPos, null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0);
 
 			spriteBatch.Draw(water, new Rectangle(0, winHeight - depth, winWidth, depth), Color.DarkSeaGreen);
+
+			spriteBatch.Draw(water, temp[0], Color.DarkSeaGreen);
+			spriteBatch.Draw(water, temp[1], Color.DarkSeaGreen);
 
 			//decel++;
 			//if (decel % 15 == 0)
